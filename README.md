@@ -1,5 +1,3 @@
-http://confluence.dian.so/pages/viewpage.action?pageId=1164827
-
 # a simple abtest util
 
 ## Usege
