@@ -1,6 +1,6 @@
 # a simple abtest util
 
-就是代码里各种if/else的替代方案，支持运行时修改abtest分桶比例
+代码层面的流量对比测试工具，支持运行时修改abtest分桶比例
 
 ## 主要类
 
