@@ -1,14 +1,16 @@
 # a simple abtest util
 
+就是代码里各种if/else的替代方案，支持运行时修改abtest分桶比例
+
 ## 主要类
 
-AbTestConfigHolder 获取abtest配置的接口
-BucketBizProcessor bucket业务逻辑
-BucketCalculator bucket依据计算器
-AbTestConfig 维护abtest实例和bucket流量、bucket依据计算器、bucket业务逻辑的关联关系
-AbTestInitConfig bucket依据计算器、bucket业务逻辑的具体实现的关联关系
-AbTestFactory 工厂，负责解析AbTestConfig和AbTestInitConfig并组装成AbTestInstance
-AbTestInstance 创建好的abtest实例
+* AbTestConfigHolder 获取abtest配置的接口
+* BucketBizProcessor bucket业务逻辑
+* BucketCalculator bucket依据计算器
+* AbTestConfig 维护abtest实例和bucket流量、bucket依据计算器、bucket业务逻辑的关联关系
+* AbTestInitConfig bucket依据计算器、bucket业务逻辑的具体实现的关联关系
+* AbTestFactory 工厂，负责解析AbTestConfig和AbTestInitConfig并组装成AbTestInstance
+* AbTestInstance 创建好的abtest实例
 
 ## Demo
 
@@ -70,6 +72,7 @@ create A AbTest beanFactory
 get and use AbTestInstance
 
     @Component
+    
     public class BizManager {
      
         @Resource
