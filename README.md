@@ -1,8 +1,18 @@
 # a simple abtest util
 
-## Usege
+## 主要类
 
-1 Instantiate ConfigHolder
+AbTestConfigHolder 获取abtest配置的接口
+BucketBizProcessor bucket业务逻辑
+BucketCalculator bucket依据计算器
+AbTestConfig 维护abtest实例和bucket流量、bucket依据计算器、bucket业务逻辑的关联关系
+AbTestInitConfig bucket依据计算器、bucket业务逻辑的具体实现的关联关系
+AbTestFactory 工厂，负责解析AbTestConfig和AbTestInitConfig并组装成AbTestInstance
+AbTestInstance 创建好的abtest实例
+
+## Demo
+
+Instantiate ConfigHolder
 
     @Component
     public class ConfigHolder implements AbTestConfigHolder {
@@ -12,41 +22,12 @@
      
         @Override
         public List<AbTestConfig> fetchConfig() {
-            String configValue = configManager.getValue(ConfigConstant.AB_TEST_CONFIG);
-            List<AbTestConfig> configList = JSON.parseObject(configValue, new TypeReference<List<AbTestConfig>>(){});
-            return configList;
-        }
-    }
-
-2 Instantiate BucketBizProcessor
-
-    public class ProcessorA extends BucketBizProcessor<String> {
-     
-        public ProcessorA(String name) {
-            super(name);
-        }
-     
-        @Override
-        public String process() {
-            System.out.println("this is processor A");
-            return "A";
+            // 配置的维护可以随意实现
+            return list;
         }
     }
     
-3 Instantiate BucketCalculator
-
-    BucketCalculator calculator = new BucketCalculator<Long>(){
-     
-        @Override
-        // return bucket calc result
-        public Integer calculate(Long userId) {
-            Integer result = new Long(Math.abs(userId) % 100).intValue() ;
-            System.out.println(String.format("param=%s, result=%s", o, result));
-            return result;
-        }
-    });
-    
-4 create A AbTest beanFactory
+create A AbTest beanFactory
 
     @Configuration
     public class AbTestFactoryBean {
@@ -64,13 +45,20 @@
             AbTestInitConfig initConfig = new AbTestInitConfig();
      
             List<BucketBizProcessor> processors = Lists.newArrayList();
-            processors.add(new ProcessorA("processor0"));
-            processors.add(new ProcessorA("processor1"));
+            processors.add(new BucketBizProcessor("processor0"){
+                // 分桶的业务逻辑0
+            });
+            processors.add(new BucketBizProcessor("processor1"){
+                // 分桶的业务逻辑1
+            });
             initConfig.setProcessors(processors);
             initConfig.setCalculator(new BucketCalculator(){
-                // see 3
+                // 例如用 用户id mod 100作为分桶依据
+                public Integer calculate(Long userId) {
+                    return new Long(Math.abs(userId) % 100).intValue() ;
+                }
             });
-            initConfig.setInstanceName("couponAfterPay");
+            initConfig.setInstanceName("testInstance");
             initConfigs.add(initConfig);
      
             abTestFactory.setInitConfigs(initConfigs);
@@ -79,7 +67,7 @@
         }
     }
 
-5 get and use AbTestInstance
+get and use AbTestInstance
 
     @Component
     public class BizManager {
